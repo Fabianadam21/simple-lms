@@ -48,28 +48,30 @@ Project ini merupakan implementasi **Learning Management System (LMS) dengan Dat
 simple-lms/
 ├── docker-compose.yml
 ├── Dockerfile
-├── manage.py
 ├── requirements.txt
 ├── .env.example
 ├── QUERY_OPTIMIZATION.md          # 📖 Detailed optimization guide
 ├── Readme.md                        # This file
-├── config/
-│   ├── __init__.py
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-└── lms/
-    ├── models.py                    # ⭐ Optimized models
-    ├── admin.py                     # ⭐ Full-featured admin
-    ├── views.py
-    ├── apps.py
-    ├── signals.py                   # ⭐ Auto slug generation
-    ├── management/                  # ⭐ Management commands
-    │   └── commands/
-    │       └── demo_query_optimization.py
-    ├── fixtures/                    # ⭐ Sample data
-    │   └── initial_data.json
-    └── migrations/
+└── code/
+    ├── manage.py
+    ├── lms/
+    │   ├── __init__.py
+    │   ├── settings.py
+    │   ├── urls.py
+    │   └── wsgi.py
+    └── courses/
+        ├── __init__.py
+        ├── admin.py
+        ├── apps.py
+        ├── models.py                    # ⭐ Optimized models
+        ├── views.py
+        ├── signals.py                   # ⭐ Auto slug generation
+        ├── management/                  # ⭐ Management commands
+        │   └── commands/
+        │       └── demo_query_optimization.py
+        ├── fixtures/                    # ⭐ Sample data
+        │   └── initial_data.json
+        └── migrations/
 ```
 
 ---
@@ -120,16 +122,16 @@ docker-compose up -d
 
 ```bash
 # Create migrations
-docker-compose exec web python manage.py makemigrations
+docker-compose exec web python code/manage.py makemigrations
 
 # Apply migrations
-docker-compose exec web python manage.py migrate
+docker-compose exec web python code/manage.py migrate
 
 # Load sample data
-docker-compose exec web python manage.py loaddata initial_data
+docker-compose exec web python code/manage.py loaddata initial_data
 
 # Create superuser
-docker-compose exec web python manage.py createsuperuser
+docker-compose exec web python code/manage.py createsuperuser
 ```
 
 ---
@@ -286,7 +288,7 @@ for course in courses:
 ### Demo Query Optimization
 
 ```bash
-docker-compose exec web python manage.py demo_query_optimization
+docker-compose exec web python code/manage.py demo_query_optimization
 ```
 
 **Output:**
@@ -308,7 +310,7 @@ Total Queries: 3 ✓
 
 ### Load Sample Data
 ```bash
-docker-compose exec web python manage.py loaddata initial_data
+docker-compose exec web python code/manage.py loaddata initial_data
 ```
 
 **Includes:**
@@ -321,7 +323,7 @@ docker-compose exec web python manage.py loaddata initial_data
 
 ### Create Fixtures from Current Data
 ```bash
-docker-compose exec web python manage.py dumpdata lms > lms/fixtures/custom_data.json
+docker-compose exec web python code/manage.py dumpdata courses > lms/fixtures/custom_data.json
 ```
 
 ---
@@ -368,9 +370,9 @@ Topics covered:
 ### Migration Issues
 ```bash
 # Reset migrations (development only)
-docker-compose exec web python manage.py migrate lms zero
-docker-compose exec web python manage.py makemigrations
-docker-compose exec web python manage.py migrate
+docker-compose exec web python code/manage.py migrate courses zero
+docker-compose exec web python code/manage.py makemigrations
+docker-compose exec web python code/manage.py migrate
 ```
 
 ### Permission Issues
@@ -446,7 +448,7 @@ docker-compose up --build
 Buka terminal baru:
 
 ```
-docker-compose exec web python manage.py migrate
+docker-compose exec web python code/manage.py migrate
 ```
 
 ---

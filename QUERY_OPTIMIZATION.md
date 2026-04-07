@@ -15,16 +15,16 @@
 ### Setup Database
 ```bash
 # Create migrations
-docker-compose exec web python manage.py makemigrations
+docker-compose exec web python code/manage.py makemigrations
 
 # Apply migrations
-docker-compose exec web python manage.py migrate
+docker-compose exec web python code/manage.py migrate
 
 # Load initial fixtures
-docker-compose exec web python manage.py loaddata initial_data
+docker-compose exec web python code/manage.py loaddata initial_data
 
 # Create superuser (jika belum ada)
-docker-compose exec web python manage.py createsuperuser
+docker-compose exec web python code/manage.py createsuperuser
 ```
 
 ### Access Django Admin
@@ -332,7 +332,7 @@ for course in courses:
 ### Run Query Optimization Demo
 
 ```bash
-docker-compose exec web python manage.py demo_query_optimization
+docker-compose exec web python code/manage.py demo_query_optimization
 ```
 
 **Output:**
@@ -374,7 +374,7 @@ Analysis:
 
 ### Load Sample Data
 ```bash
-docker-compose exec web python manage.py loaddata initial_data
+docker-compose exec web python code/manage.py loaddata initial_data
 ```
 
 **Includes:**
@@ -389,7 +389,7 @@ docker-compose exec web python manage.py loaddata initial_data
 
 ### Create Fixtures from Current Data
 ```bash
-docker-compose exec web python manage.py dumpdata lms > lms/fixtures/data.json
+docker-compose exec web python code/manage.py dumpdata courses > code/courses/fixtures/data.json
 ```
 
 ---

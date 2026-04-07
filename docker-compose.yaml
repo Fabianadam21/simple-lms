@@ -23,6 +23,7 @@ services:
       - db
     env_file:
       - .env
+    command: sh -c "until python -c 'import socket; s=socket.socket(); s.connect((\"db\",5432)); s.close()'; do echo waiting for db; sleep 1; done; python code/manage.py runserver 0.0.0.0:8000"
 
 volumes:
   postgres_data:

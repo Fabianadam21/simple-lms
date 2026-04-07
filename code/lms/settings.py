@@ -19,7 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'lms',
+    'courses',
 ]
 
 MIDDLEWARE = [
@@ -46,11 +46,11 @@ TEMPLATES = [
     },
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = 'lms.urls'
 
 
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = 'lms.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -65,4 +65,3 @@ DATABASES = {
 import socket
 ALLOWED_HOSTS.append(socket.gethostname())
 STATIC_URL = '/static/'
-AUTH_USER_MODEL = 'lms.User'
