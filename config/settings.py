@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'lms',
 ]
 
 MIDDLEWARE = [
@@ -64,3 +65,4 @@ DATABASES = {
 import socket
 ALLOWED_HOSTS.append(socket.gethostname())
 STATIC_URL = '/static/'
+AUTH_USER_MODEL = 'lms.User'

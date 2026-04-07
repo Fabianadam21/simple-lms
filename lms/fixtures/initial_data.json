@@ -1,0 +1,430 @@
+[
+  {
+    "model": "lms.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$abcd1234$xyz",
+      "last_login": null,
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "Admin",
+      "last_name": "User",
+      "email": "admin@lms.local",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2025-01-01T08:00:00Z",
+      "role": "admin"
+    }
+  },
+  {
+    "model": "lms.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$abcd1234$xyz",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "instructor1",
+      "first_name": "John",
+      "last_name": "Doe",
+      "email": "john@lms.local",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-01-05T10:00:00Z",
+      "role": "instructor"
+    }
+  },
+  {
+    "model": "lms.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$abcd1234$xyz",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "instructor2",
+      "first_name": "Jane",
+      "last_name": "Smith",
+      "email": "jane@lms.local",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-01-06T10:00:00Z",
+      "role": "instructor"
+    }
+  },
+  {
+    "model": "lms.user",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$abcd1234$xyz",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "student1",
+      "first_name": "Alice",
+      "last_name": "Johnson",
+      "email": "alice@lms.local",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-01-10T14:00:00Z",
+      "role": "student"
+    }
+  },
+  {
+    "model": "lms.user",
+    "pk": 5,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$abcd1234$xyz",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "student2",
+      "first_name": "Bob",
+      "last_name": "Wilson",
+      "email": "bob@lms.local",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-01-12T15:00:00Z",
+      "role": "student"
+    }
+  },
+  {
+    "model": "lms.user",
+    "pk": 6,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$abcd1234$xyz",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "student3",
+      "first_name": "Charlie",
+      "last_name": "Brown",
+      "email": "charlie@lms.local",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2025-01-14T09:00:00Z",
+      "role": "student"
+    }
+  },
+  {
+    "model": "lms.category",
+    "pk": 1,
+    "fields": {
+      "name": "Programming",
+      "description": "Learn programming languages and web development",
+      "parent": null,
+      "created_at": "2025-01-01T08:00:00Z",
+      "updated_at": "2025-01-01T08:00:00Z"
+    }
+  },
+  {
+    "model": "lms.category",
+    "pk": 2,
+    "fields": {
+      "name": "Python",
+      "description": "Python programming language courses",
+      "parent": 1,
+      "created_at": "2025-01-01T08:10:00Z",
+      "updated_at": "2025-01-01T08:10:00Z"
+    }
+  },
+  {
+    "model": "lms.category",
+    "pk": 3,
+    "fields": {
+      "name": "Web Development",
+      "description": "Web development with Django and more",
+      "parent": 1,
+      "created_at": "2025-01-01T08:20:00Z",
+      "updated_at": "2025-01-01T08:20:00Z"
+    }
+  },
+  {
+    "model": "lms.category",
+    "pk": 4,
+    "fields": {
+      "name": "Data Science",
+      "description": "Data science and machine learning courses",
+      "parent": null,
+      "created_at": "2025-01-01T08:30:00Z",
+      "updated_at": "2025-01-01T08:30:00Z"
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 1,
+    "fields": {
+      "title": "Python Basics for Beginners",
+      "slug": "python-basics-for-beginners",
+      "description": "Learn Python programming from scratch. This course covers fundamentals of Python including variables, data types, control flow, and functions.",
+      "instructor": 2,
+      "category": 2,
+      "is_active": true,
+      "created_at": "2025-01-15T10:00:00Z",
+      "updated_at": "2025-01-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 2,
+    "fields": {
+      "title": "Django Web Development Masterclass",
+      "slug": "django-web-development-masterclass",
+      "description": "Complete Django course covering models, views, templates, forms, authentication, and deployment. Build real-world web applications.",
+      "instructor": 2,
+      "category": 3,
+      "is_active": true,
+      "created_at": "2025-01-20T11:00:00Z",
+      "updated_at": "2025-01-20T11:00:00Z"
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 3,
+    "fields": {
+      "title": "Advanced Python: OOP & Design Patterns",
+      "slug": "advanced-python-oop-design-patterns",
+      "description": "Master Object-Oriented Programming and Design Patterns in Python. Learn advanced concepts for professional development.",
+      "instructor": 3,
+      "category": 2,
+      "is_active": true,
+      "created_at": "2025-01-22T09:00:00Z",
+      "updated_at": "2025-01-22T09:00:00Z"
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 4,
+    "fields": {
+      "title": "Introduction to Machine Learning",
+      "slug": "introduction-to-machine-learning",
+      "description": "Learn the basics of machine learning using Python. Understand algorithms, model training, and evaluation techniques.",
+      "instructor": 3,
+      "category": 4,
+      "is_active": true,
+      "created_at": "2025-01-25T14:00:00Z",
+      "updated_at": "2025-01-25T14:00:00Z"
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 1,
+    "fields": {
+      "course": 1,
+      "title": "Introduction to Python",
+      "description": "Your first steps into Python programming",
+      "content": "Python is a high-level, interpreted programming language. In this lesson, we'll explore what Python is, why it's used, and set up our development environment.",
+      "order": 1,
+      "video_url": "https://example.com/videos/python-intro",
+      "duration_minutes": 25,
+      "created_at": "2025-01-16T10:00:00Z",
+      "updated_at": "2025-01-16T10:00:00Z"
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 2,
+    "fields": {
+      "course": 1,
+      "title": "Variables and Data Types",
+      "description": "Understand Python variables and basic data types",
+      "content": "Learn about variables, variable naming conventions, and the main data types in Python: strings, integers, floats, and booleans.",
+      "order": 2,
+      "video_url": "https://example.com/videos/variables-datatypes",
+      "duration_minutes": 35,
+      "created_at": "2025-01-16T11:00:00Z",
+      "updated_at": "2025-01-16T11:00:00Z"
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 3,
+    "fields": {
+      "course": 1,
+      "title": "Control Flow: If, Else, Elif",
+      "description": "Making decisions in Python code",
+      "content": "Explore conditional statements and how to control the flow of your Python programs. Learn if, else, and elif statements.",
+      "order": 3,
+      "video_url": "https://example.com/videos/control-flow",
+      "duration_minutes": 40,
+      "created_at": "2025-01-17T10:00:00Z",
+      "updated_at": "2025-01-17T10:00:00Z"
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 4,
+    "fields": {
+      "course": 2,
+      "title": "Django Setup and Project Structure",
+      "description": "Getting started with Django",
+      "content": "Set up your Django development environment. Understand the project structure and create your first Django project.",
+      "order": 1,
+      "video_url": "https://example.com/videos/django-setup",
+      "duration_minutes": 30,
+      "created_at": "2025-01-21T10:00:00Z",
+      "updated_at": "2025-01-21T10:00:00Z"
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 5,
+    "fields": {
+      "course": 2,
+      "title": "Django Models and Database",
+      "description": "Creating database models in Django",
+      "content": "Learn how to create Django models, define relationships, and work with the Django ORM. Understand database migrations.",
+      "order": 2,
+      "video_url": "https://example.com/videos/django-models",
+      "duration_minutes": 50,
+      "created_at": "2025-01-21T11:00:00Z",
+      "updated_at": "2025-01-21T11:00:00Z"
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 6,
+    "fields": {
+      "course": 3,
+      "title": "Classes and Objects",
+      "description": "Object-Oriented Programming fundamentals",
+      "content": "Understand the concepts of classes, objects, attributes, and methods. Learn how to design classes for your application.",
+      "order": 1,
+      "video_url": "https://example.com/videos/oop-classes",
+      "duration_minutes": 45,
+      "created_at": "2025-01-23T10:00:00Z",
+      "updated_at": "2025-01-23T10:00:00Z"
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 7,
+    "fields": {
+      "course": 4,
+      "title": "Machine Learning Fundamentals",
+      "description": "Introduction to ML concepts",
+      "content": "Learn the basics of machine learning including supervised and unsupervised learning, training and testing, and model evaluation.",
+      "order": 1,
+      "video_url": "https://example.com/videos/ml-basics",
+      "duration_minutes": 50,
+      "created_at": "2025-01-26T10:00:00Z",
+      "updated_at": "2025-01-26T10:00:00Z"
+    }
+  },
+  {
+    "model": "lms.enrollment",
+    "pk": 1,
+    "fields": {
+      "student": 4,
+      "course": 1,
+      "status": "active",
+      "enrolled_at": "2025-02-01T10:00:00Z",
+      "completed_at": null
+    }
+  },
+  {
+    "model": "lms.enrollment",
+    "pk": 2,
+    "fields": {
+      "student": 4,
+      "course": 2,
+      "status": "active",
+      "enrolled_at": "2025-02-02T11:00:00Z",
+      "completed_at": null
+    }
+  },
+  {
+    "model": "lms.enrollment",
+    "pk": 3,
+    "fields": {
+      "student": 5,
+      "course": 1,
+      "status": "active",
+      "enrolled_at": "2025-02-03T09:00:00Z",
+      "completed_at": null
+    }
+  },
+  {
+    "model": "lms.enrollment",
+    "pk": 4,
+    "fields": {
+      "student": 5,
+      "course": 3,
+      "status": "active",
+      "enrolled_at": "2025-02-04T10:00:00Z",
+      "completed_at": null
+    }
+  },
+  {
+    "model": "lms.enrollment",
+    "pk": 5,
+    "fields": {
+      "student": 6,
+      "course": 4,
+      "status": "active",
+      "enrolled_at": "2025-02-05T14:00:00Z",
+      "completed_at": null
+    }
+  },
+  {
+    "model": "lms.progress",
+    "pk": 1,
+    "fields": {
+      "enrollment": 1,
+      "lesson": 1,
+      "is_completed": true,
+      "completed_at": "2025-02-02T11:00:00Z",
+      "started_at": "2025-02-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "lms.progress",
+    "pk": 2,
+    "fields": {
+      "enrollment": 1,
+      "lesson": 2,
+      "is_completed": true,
+      "completed_at": "2025-02-04T12:00:00Z",
+      "started_at": "2025-02-02T15:00:00Z"
+    }
+  },
+  {
+    "model": "lms.progress",
+    "pk": 3,
+    "fields": {
+      "enrollment": 1,
+      "lesson": 3,
+      "is_completed": false,
+      "completed_at": null,
+      "started_at": "2025-02-05T10:00:00Z"
+    }
+  },
+  {
+    "model": "lms.progress",
+    "pk": 4,
+    "fields": {
+      "enrollment": 2,
+      "lesson": 4,
+      "is_completed": true,
+      "completed_at": "2025-02-03T13:00:00Z",
+      "started_at": "2025-02-02T11:00:00Z"
+    }
+  },
+  {
+    "model": "lms.progress",
+    "pk": 5,
+    "fields": {
+      "enrollment": 2,
+      "lesson": 5,
+      "is_completed": false,
+      "completed_at": null,
+      "started_at": "2025-02-04T14:00:00Z"
+    }
+  },
+  {
+    "model": "lms.progress",
+    "pk": 6,
+    "fields": {
+      "enrollment": 3,
+      "lesson": 1,
+      "is_completed": true,
+      "completed_at": "2025-02-04T10:00:00Z",
+      "started_at": "2025-02-03T09:00:00Z"
+    }
+  }
+]
