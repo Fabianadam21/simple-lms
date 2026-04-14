@@ -38,119 +38,66 @@ Password: (sesuai yang dibuat saat createsuperuser)
 
 ## Models Overview
 
-### 1. User Model (Custom)
-Custom user model dengan role-based access control.
-
-```python
-class User(AbstractUser):
-    role = models.CharField(choices=[
-        ('admin', 'Admin'),
-        ('instructor', 'Instructor'),
-        ('student', 'Student'),
-    ])
-```
+### 1. User Model (Built-in Django)
+Menggunakan Django's built-in User model untuk autentikasi.
 
 **Relationships:**
-- Instruktur → Many Courses
-- Siswa → Many Enrollments
+- Teacher → Many Courses
+- Student → Many CourseMembers
 
 ---
 
-### 2. Category Model (Hierarchical)
-Self-referencing model untuk kategori course bersarang.
-
-```python
-class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    parent = models.ForeignKey('self', null=True, blank=True)
-    children = related_name  # Reverse lookup
-```
-
-**Contoh Hierarchy:**
-```
-Programming
-├── Python
-└── Web Development
-
-Data Science
-└── Machine Learning
-```
-
----
-
-### 3. Course Model
-Course dengan instructor dan category.
+### 2. Course Model
+Course dengan teacher dan informasi dasar.
 
 ```python
 class Course(models.Model):
-    title = models.CharField(max_length=200)
-    instructor = ForeignKey(User, limit_choices_to={'role': 'instructor'})
-    category = ForeignKey(Category)
-    is_active = models.BooleanField(default=True, db_index=True)
-```
-
-**Custom Manager:**
-```python
-class CourseQuerySet(models.QuerySet):
-    def for_listing(self):
-        """Optimized untuk course listing view"""
-        return self.select_related('instructor', 'category')
-                   .prefetch_related('lessons')
+    name = models.CharField("nama matkul", max_length=100)
+    description = models.TextField("deskripsi", default='-')
+    price = models.IntegerField("harga", default=10000)
+    image = models.ImageField("gambar", null=True, blank=True)
+    teacher = models.ForeignKey(User, on_delete=models.RESTRICT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 ```
 
 ---
 
-### 4. Lesson Model
-Lesson dalam course dengan ordering.
+### 3. CourseMember Model
+Anggota course dengan role.
 
 ```python
-class Lesson(models.Model):
-    course = ForeignKey(Course)
-    title = models.CharField(max_length=200)
-    order = models.PositiveIntegerField()  # db_index=True
-    video_url = models.URLField(blank=True)
-    duration_minutes = models.PositiveIntegerField()
-    
-    class Meta:
-        unique_together = ('course', 'order')  # Prevent duplicate orders
-        ordering = ['course', 'order']
+class CourseMember(models.Model):
+    course_id = models.ForeignKey(Course, on_delete=models.RESTRICT)
+    user_id = models.ForeignKey(User, on_delete=models.RESTRICT)
+    roles = models.CharField(max_length=3, choices=[('std', 'Siswa'), ('ast', 'Asisten')])
 ```
 
 ---
 
-### 5. Enrollment Model
-Track student enrollment dalam course.
+### 4. CourseContent Model
+Konten course dengan struktur hierarki.
 
 ```python
-class Enrollment(models.Model):
-    student = ForeignKey(User, limit_choices_to={'role': 'student'})
-    course = ForeignKey(Course)
-    status = CharField(choices=['active', 'completed', 'dropped'])
-    enrolled_at = DateTimeField(auto_now_add=True)
-```
-
-**Custom Manager:**
-```python
-class EnrollmentQuerySet(models.QuerySet):
-    def for_student_dashboard(self):
-        """Optimized untuk student dashboard"""
-        return self.select_related('course__instructor', 'course__category')
-                   .prefetch_related('progress__lesson')
+class CourseContent(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.TextField(default='-')
+    video_url = models.CharField(max_length=200, null=True, blank=True)
+    file_attachment = models.FileField(null=True, blank=True)
+    course_id = models.ForeignKey(Course, on_delete=models.RESTRICT)
+    parent_id = models.ForeignKey('self', on_delete=models.RESTRICT, null=True, blank=True)
 ```
 
 ---
 
-### 6. Progress Model
-Track lesson completion per student.
+### 5. Comment Model
+Komentar pada konten.
 
 ```python
-class Progress(models.Model):
-    enrollment = ForeignKey(Enrollment)
-    lesson = ForeignKey(Lesson)
-    is_completed = models.BooleanField(default=False)
-    
-    class Meta:
-        unique_together = ('enrollment', 'lesson')  # One record per lesson
+class Comment(models.Model):
+    content_id = models.ForeignKey(CourseContent, on_delete=models.CASCADE)
+    member_id = models.ForeignKey(CourseMember, on_delete=models.CASCADE)
+    comment = models.TextField()
 ```
 
 ---
@@ -164,8 +111,8 @@ class Progress(models.Model):
 # Course Listing - WITH N+1 PROBLEM
 courses = Course.objects.all()  # Query 1
 for course in courses:  # N queries
-    print(course.instructor.name)  # Query 2, 3, 4...
-    print(course.category.name)    # Query N+2, N+3, N+4...
+    print(course.teacher.username)  # Query 2, 3, 4...
+    print(course.teacher.first_name)  # Query N+2, N+3, N+4...
 ```
 
 **Total Queries: 1 + (N × 2) = 1 + 10 = 11 queries untuk 5 courses**
@@ -178,14 +125,11 @@ for course in courses:  # N queries
 
 ```python
 # Use select_related untuk Foreign Keys
-courses = Course.objects.select_related(
-    'instructor',
-    'category'
-).all()
+courses = Course.objects.select_related('teacher').all()
 
 for course in courses:
-    print(course.instructor.name)  # NO additional query
-    print(course.category.name)    # NO additional query
+    print(course.teacher.username)  # NO additional query
+    print(course.teacher.first_name)  # NO additional query
 ```
 
 **How it works:**
@@ -195,10 +139,9 @@ for course in courses:
 
 **SQL Query:**
 ```sql
-SELECT course.*, user.*, category.* 
-FROM lms_course
-JOIN lms_user ON course.instructor_id = user.id
-JOIN lms_category ON course.category_id = category.id
+SELECT course.*, user.* 
+FROM courses_course
+JOIN auth_user ON course.teacher_id = user.id
 ```
 
 ---
@@ -209,13 +152,11 @@ JOIN lms_category ON course.category_id = category.id
 
 ```python
 # Use prefetch_related untuk relationships dengan multiple items
-courses = Course.objects.prefetch_related(
-    'lessons'  # Many lessons per course
-).all()
+courses = Course.objects.prefetch_related('coursemember_set').all()
 
 for course in courses:
-    for lesson in course.lessons.all():  # NO additional query
-        print(lesson.title)
+    for member in course.coursemember_set.all():  # NO additional query
+        print(member.user_id.username)
 ```
 
 **How it works:**
@@ -226,10 +167,10 @@ for course in courses:
 **SQL Queries:**
 ```sql
 -- Query 1
-SELECT * FROM lms_course
+SELECT * FROM courses_course
 
 -- Query 2
-SELECT * FROM lms_lesson 
+SELECT * FROM courses_coursemember 
 WHERE course_id IN (1, 2, 3, 4, 5)
 ```
 
@@ -240,27 +181,18 @@ WHERE course_id IN (1, 2, 3, 4, 5)
 **✓ OPTIMAL - Best of both worlds**
 
 ```python
-# Gunakan di custom manager
-class CourseQuerySet(models.QuerySet):
-    def for_listing(self):
-        return self.select_related(
-            'instructor',      # Foreign key
-            'category'         # Foreign key
-        ).prefetch_related(
-            'lessons'          # Reverse ForeignKey (one-to-many)
-        )
+# Combine select_related and prefetch_related
+courses = Course.objects.select_related('teacher').prefetch_related('coursemember_set')
 
-# Usage
-courses = Course.objects.for_listing()
 for course in courses:
-    print(course.instructor.name)      # From select_related - no query
-    for lesson in course.lessons.all(): # From prefetch_related - no query
-        print(lesson.title)
+    print(course.teacher.username)  # From select_related - no query
+    for member in course.coursemember_set.all():  # From prefetch_related - no query
+        print(member.user_id.username)
 ```
 
 **Total Queries: 3**
-- 1 query untuk courses + instructor + category (dengan JOINs)
-- 1 query untuk semua lessons
+- 1 query untuk courses + teacher (dengan JOINs)
+- 1 query untuk semua members
 - 1 query untuk semua related data
 
 ---
@@ -272,58 +204,44 @@ for course in courses:
 | Approach | Queries | Time | Memory |
 |----------|---------|------|--------|
 | ❌ Naive (No optimization) | **11** | ~150ms | High |
-| ✓ select_related() only | **6** | ~80ms | Medium |
+| ✓ select_related() only | **1** | ~30ms | Medium |
 | ✓ prefetch_related() only | **7** | ~90ms | Low |
-| ✓ Both (Optimal) | **3** | ~30ms | Medium |
+| ✓ Both (Optimal) | **3** | ~50ms | Medium |
 
 ---
 
-### Benchmark: Student Dashboard
+### Benchmark: Course Detail with Members
 
 | Approach | Queries | Time | Memory |
 |----------|---------|------|--------|
 | ❌ Naive | **25** | ~300ms | High |
-| ✓ select_related + prefetch | **4** | ~50ms | Low |
+| ✓ select_related + prefetch | **4** | ~60ms | Low |
 
 ---
 
 ## Django Admin Features
 
-### User Administration
-- **List Display**: Username, Full Name, Role Badge, Email, Staff Status
-- **Filters**: Role, Is Staff, Is Active, Date Joined
-- **Search**: Username, Email, First/Last Name
-- **Role Color Badges**: Admin (Red), Instructor (Blue), Student (Green)
-
-### Category Management
-- **List Display**: Name, Parent Category, Course Count, Subcategories Count
-- **Hierarchy View**: Parent-child relationships
-- **Course Counting**: Automatic count of courses in category
-
 ### Course Management
-- **List Display**: Title, Instructor, Category, Lessons, Students, Status Badge
-- **Inline Lessons**: Edit lessons directly in course admin
-- **Status Badge**: Visual indicator for active/inactive courses
-- **Search**: By title, description, instructor name
-- **Filters**: By category, instructor, active status
+- **List Display**: Name, Teacher, Price, Created At
+- **Filters**: Teacher, Created At
+- **Search**: Name, Description
+- **Ordering**: By creation date (newest first)
 
-### Lesson Administration
-- **Inline in Course**: Add/edit lessons while editing course
-- **Order Management**: Unique course+order constraint
-- **Video Tracking**: See which lessons have videos
-- **Progress Tracking**: Shows completed/total progress
+### CourseMember Administration
+- **List Display**: Course, User, Role
+- **Filters**: Role
+- **Role Choices**: Student (std), Assistant (ast)
 
-### Enrollment Management
-- **List Display**: Student, Course, Status Badge, Progress %, Dates
-- **Status Colors**: Active (Green), Completed (Blue), Dropped (Red)
-- **Progress Bar**: Visual progress representation
-- **Inline Progress**: View/edit student progress per lesson
-- **Filters**: By status, course, category, date range
+### CourseContent Management
+- **List Display**: Name, Course, Parent Content
+- **Filters**: Course
+- **Search**: Name, Description
+- **Hierarchy**: Parent-child relationships for content structure
 
-### Progress Tracking
-- **Status Badges**: Completed (✓) vs In Progress (○)
-- **Timestamps**: Started at, Completed at
-- **Lesson Progress**: Shows which lessons students completed
+### Comment Administration
+- **List Display**: Content, Member, Comment
+- **Filters**: Content
+- **Cascade Delete**: Comments deleted when content is deleted
 
 ---
 
@@ -346,26 +264,25 @@ DEMO 1: N+1 PROBLEM - Course Listing (Naive)
 ================================================================================
 Total Queries: 11 ❌
 
-1. SELECT ... FROM "lms_course"
-2. SELECT ... FROM "lms_user" WHERE id = 2
-3. SELECT ... FROM "lms_category" WHERE id = 1
-4. SELECT ... FROM "lms_user" WHERE id = 3
+1. SELECT ... FROM "courses_course"
+2. SELECT ... FROM "auth_user" WHERE id = 2
+3. SELECT ... FROM "auth_user" WHERE id = 3
 ...
 
 Analysis:
   Query Count: 11
   Status: ❌ PROBLEMATIC
-  ❌ N+1 Problem: 1 query untuk courses + N queries untuk setiap instructor & category
+  ❌ N+1 Problem: 1 query untuk courses + N queries untuk setiap teacher
 
 ================================================================================
 DEMO 2: OPTIMIZED - Course Listing with select_related
 ================================================================================
-Total Queries: 3 ✓
+Total Queries: 1 ✓
 
 Analysis:
-  Query Count: 3
+  Query Count: 1
   Status: ✓ OPTIMAL
-  ✓ Optimized: select_related() menggabungkan instructor & category dalam 1 query
+  ✓ Optimized: select_related() menggabungkan teacher dalam 1 query
 ```
 
 ---
@@ -378,14 +295,11 @@ docker-compose exec web python code/manage.py loaddata initial_data
 ```
 
 **Includes:**
-- 1 Admin user
-- 2 Instructors
-- 3 Students
-- 4 Categories (with hierarchy)
-- 4 Courses
-- 7 Lessons
-- 5 Enrollments
-- 6 Progress records
+- Sample users (teachers and students)
+- Sample courses with different prices
+- Course members with various roles
+- Course contents with hierarchy
+- Sample comments
 
 ### Create Fixtures from Current Data
 ```bash
@@ -396,50 +310,32 @@ docker-compose exec web python code/manage.py dumpdata courses > code/courses/fi
 
 ## Best Practices
 
-### 1. Always Use Custom QuerySets / Managers
+### 1. Use select_related() for Foreign Keys
 ```python
-class CourseManager(models.Manager):
-    def get_queryset(self):
-        return CourseQuerySet(self.model, using=self._db)
-    
-    def for_listing(self):
-        return self.get_queryset().for_listing()
-
-class Course(models.Model):
-    objects = CourseManager()
+# Always use select_related for foreign keys in listings
+courses = Course.objects.select_related('teacher').all()
 ```
 
-### 2. Use db_index=True untuk Frequent Lookups
+### 2. Use prefetch_related() for Reverse Relations
 ```python
-class Lesson(models.Model):
-    order = models.PositiveIntegerField(db_index=True)
-    # Queries filtering by order akan cepat
+# Use prefetch_related for one-to-many relations
+courses = Course.objects.prefetch_related('coursemember_set').all()
 ```
 
-### 3. Set limit_choices_to di Admin
+### 3. Combine Both for Optimal Performance
 ```python
-instructor = models.ForeignKey(
-    User,
-    limit_choices_to={'role': 'instructor'}  # Admin dropdown hanya instruktur
-)
+courses = Course.objects.select_related('teacher').prefetch_related('coursemember_set')
 ```
 
-### 4. Use unique_together untuk Constraints
-```python
-class Enrollment(models.Model):
-    class Meta:
-        unique_together = ('student', 'course')  # Prevent duplicate enrollments
-```
-
-### 5. Profile Your Queries
+### 4. Profile Your Queries
 ```python
 from django.test.utils import CaptureQueriesContext
 from django.db import connection
 
 with CaptureQueriesContext(connection) as ctx:
-    courses = Course.objects.for_listing()
+    courses = Course.objects.select_related('teacher').all()
     for course in courses:
-        print(course.title)
+        print(course.name)
 
 print(f"Total queries: {len(ctx)}")
 ```
@@ -468,6 +364,6 @@ print(f"Total queries: {len(ctx)}")
 
 ---
 
-**Last Updated:** April 2025
+**Last Updated:** April 2026
 **Django Version:** 4.2+
 **Python Version:** 3.9+
