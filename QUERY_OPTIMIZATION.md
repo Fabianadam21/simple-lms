@@ -255,13 +255,13 @@ docker-compose exec web python code/manage.py demo_query_optimization
 
 **Output:**
 ```
-================================================================================
-DJANGO ORM QUERY OPTIMIZATION DEMO
-================================================================================
 
-================================================================================
+DJANGO ORM QUERY OPTIMIZATION DEMO
+
+
+
 DEMO 1: N+1 PROBLEM - Course Listing (Naive)
-================================================================================
+
 Total Queries: 11 ❌
 
 1. SELECT ... FROM "courses_course"
@@ -274,9 +274,9 @@ Analysis:
   Status: ❌ PROBLEMATIC
   ❌ N+1 Problem: 1 query untuk courses + N queries untuk setiap teacher
 
-================================================================================
+
 DEMO 2: OPTIMIZED - Course Listing with select_related
-================================================================================
+
 Total Queries: 1 ✓
 
 Analysis:
