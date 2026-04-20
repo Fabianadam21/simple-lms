@@ -11,26 +11,6 @@ class UserOut(Schema):
     first_name: str
     last_name: str
     email: str
-    role: str = Field(..., alias="profile.role")
-
-
-class RegisterIn(Schema):
-    username: str
-    email: str
-    password: str
-    first_name: str
-    last_name: str
-    role: str = 'student'
-
-
-class LoginIn(Schema):
-    username: str
-    password: str
-
-
-class TokenOut(Schema):
-    access: str
-    refresh: str
 
 
 class CourseIn(Schema):
@@ -63,20 +43,3 @@ class DetailCourseOut(CourseOut):
     contents: List[ContentTitleOut] = Field(
         ..., alias="coursecontent_set"
     )
-
-
-class EnrollmentIn(Schema):
-    course_id: int
-
-
-class ProgressIn(Schema):
-    content_id: int
-    completed: bool = True
-
-
-class ProgressOut(Schema):
-    id: int
-    content_id: int
-    member_id: int
-    completed: bool
-    completed_at: datetime
